@@ -503,6 +503,32 @@ def test_append_file_not_opened():
         append_file(str('unknown file'), content='APPEND TEXT')
 
 
+def test_print_window_internal(tmp_path):
+    test_file_path = tmp_path / 'a.txt'
+    create_file(str(test_file_path))
+    open_file(str(test_file_path))
+    with open(test_file_path, 'w') as file:
+        for i in range(1, 101):
+            file.write(f'Line `{i}`\n')
+
+    # Define the parameters for the test
+    current_line = 50
+    window = 2
+
+    # Test _print_window especially with backticks
+    with io.StringIO() as buf:
+        with contextlib.redirect_stdout(buf):
+            _print_window(str(test_file_path), current_line, window, return_str=False)
+        result = buf.getvalue()
+        expected = (
+            '(49 more lines above)\n'
+            '50|Line `50`\n'
+            '51|Line `51`\n'
+            '(49 more lines below)\n'
+        )
+        assert result == expected
+
+
 def test_edit_file(tmp_path):
     temp_file_path = tmp_path / 'a.txt'
     content = 'Line 1\nLine 2\nLine 3\nLine 4\nLine 5'
