@@ -529,6 +529,101 @@ def test_print_window_internal(tmp_path):
         assert result == expected
 
 
+def test_edit_file_window(tmp_path, monkeypatch):
+    # Set environment variable via monkeypatch does NOT work!
+    monkeypatch.setattr(
+        'opendevin.runtime.plugins.agent_skills.agentskills.ENABLE_AUTO_LINT', True
+    )
+
+    content = """def any_int(a, b, c):
+    return isinstance(a, int) and isinstance(b, int) and isinstance(c, int)
+
+def test_any_int():
+    assert any_int(1, 2, 3) == True
+    assert any_int(1.5, 2, 3) == False
+    assert any_int(1, 2.5, 3) == False
+    assert any_int(1, 2, 3.5) == False
+    assert any_int(1.0, 2, 3) == False
+    assert any_int(1, 2.0, 3) == False
+    assert any_int(1, 2, 3.0) == False
+    assert any_int(0, 0, 0) == True
+    assert any_int(-1, -2, -3) == True
+    assert any_int(1, -2, 3) == True
+    assert any_int(1.5, -2, 3) == False
+    assert any_int(1, -2.5, 3) == False
+
+def check(any_int):
+    # Check some simple cases
+    assert any_int(2, 3, 1)==True, "This prints if this assert fails 1 (good for debugging!)"
+    assert any_int(2.5, 2, 3)==False, "This prints if this assert fails 2 (good for debugging!)"
+    assert any_int(1.5, 5, 3.5)==False, "This prints if this assert fails 3 (good for debugging!)"
+    assert any_int(2, 6, 2)==False, "This prints if this assert fails 4 (good for debugging!)"
+    assert any_int(4, 2, 2)==True, "This prints if this assert fails 5 (good for debugging!)"
+    assert any_int(2.2, 2.2, 2.2)==False, "This prints if this assert fails 6 (good for debugging!)"
+    assert any_int(-4, 6, 2)==True, "This prints if this assert fails 7 (good for debugging!)"
+
+    # Check some edge cases that are easy to work out by hand.
+    assert any_int(2,1,1)==True, "This prints if this assert fails 8 (also good for debugging!)"
+    assert any_int(3,4,7)==True, "This prints if this assert fails 9 (also good for debugging!)"
+    assert any_int(3.0,4,7)==False, "This prints if this assert fails 10 (also good for debugging!)"
+
+check(any_int)"""
+
+    temp_file_path = tmp_path / 'error-test.py'
+    temp_file_path.write_text(content)
+
+    open_file(str(temp_file_path))
+
+    with io.StringIO() as buf:
+        with contextlib.redirect_stdout(buf):
+            edit_file(
+                start=9, end=9, content='        assert any_int(1.0, 2, 3) == False'
+            )
+        result = buf.getvalue()
+        expected = (
+            '[Your proposed edit has introduced new syntax error(s). Please understand the errors and retry your edit command.]\n'
+            'ERRORS:\n'
+            + str(temp_file_path)
+            + ':9:9: '
+            + 'E999 IndentationError: unexpected indent\n'
+            '[This is how your edit would have looked if applied]\n'
+            '-------------------------------------------------\n'
+            '(5 more lines above)\n'
+            '6|    assert any_int(1.5, 2, 3) == False\n'
+            '7|    assert any_int(1, 2.5, 3) == False\n'
+            '8|    assert any_int(1, 2, 3.5) == False\n'
+            '9|        assert any_int(1.0, 2, 3) == False\n'
+            '10|    assert any_int(1, 2.0, 3) == False\n'
+            '11|    assert any_int(1, 2, 3.0) == False\n'
+            '12|    assert any_int(0, 0, 0) == True\n'
+            '13|    assert any_int(-1, -2, -3) == True\n'
+            '14|    assert any_int(1, -2, 3) == True\n'
+            '15|    assert any_int(1.5, -2, 3) == False\n'
+            '(18 more lines below)\n'
+            '-------------------------------------------------\n'
+            '\n'
+            '[This is the original code before your edit]\n'
+            '-------------------------------------------------\n'
+            '(5 more lines above)\n'
+            '6|    assert any_int(1.5, 2, 3) == False\n'
+            '7|    assert any_int(1, 2.5, 3) == False\n'
+            '8|    assert any_int(1, 2, 3.5) == False\n'
+            '9|    assert any_int(1.0, 2, 3) == False\n'
+            '10|    assert any_int(1, 2.0, 3) == False\n'
+            '11|    assert any_int(1, 2, 3.0) == False\n'
+            '12|    assert any_int(0, 0, 0) == True\n'
+            '13|    assert any_int(-1, -2, -3) == True\n'
+            '14|    assert any_int(1, -2, 3) == True\n'
+            '15|    assert any_int(1.5, -2, 3) == False\n'
+            '(18 more lines below)\n'
+            '-------------------------------------------------\n'
+            'Your changes have NOT been applied. Please fix your edit command and try again.\n'
+            'You either need to 1) Specify the correct start/end line arguments or 2) Correct your edit code.\n'
+            'DO NOT re-run the same failed edit command. Running it again will lead to the same error.\n'
+        )
+        assert result == expected
+
+
 def test_edit_file(tmp_path):
     temp_file_path = tmp_path / 'a.txt'
     content = 'Line 1\nLine 2\nLine 3\nLine 4\nLine 5'
