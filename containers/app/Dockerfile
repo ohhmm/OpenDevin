@@ -48,7 +48,7 @@ ENV OPEN_DEVIN_BUILD_VERSION=$OPEN_DEVIN_BUILD_VERSION
 RUN mkdir -p $WORKSPACE_BASE
 
 RUN apt-get update -y \
-    && apt-get install -y curl ssh sudo
+    && apt-get install -y curl ssh sudo g++
 
 RUN sed -i 's/^UID_MIN.*/UID_MIN 499/' /etc/login.defs # Default is 1000, but OSX is often 501
 RUN sed -i 's/^UID_MAX.*/UID_MAX 1000000/' /etc/login.defs # Default is 60000, but we've seen up to 200000
