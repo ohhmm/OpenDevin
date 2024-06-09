@@ -28,6 +28,9 @@ COPY ./pyproject.toml ./poetry.lock ./
 RUN touch README.md
 RUN poetry install --without evaluation --no-root && rm -rf $POETRY_CACHE_DIR
 
+# Install litellm module
+RUN python3 -m pip install litellm
+
 FROM python:3.12.3-slim as runtime
 
 WORKDIR /app
@@ -69,7 +72,6 @@ COPY --chown=opendevin:app --chmod=770 ./agenthub ./agenthub
 
 RUN python opendevin/core/download.py # No-op to download assets
 RUN chown -R opendevin:app /app/logs && chmod -R 770 /app/logs # This gets created by the download.py script
-
 
 COPY --chown=opendevin:app --chmod=770 --from=frontend-builder /app/dist ./frontend/dist
 COPY --chown=opendevin:app --chmod=770 ./containers/app/entrypoint.sh /app/entrypoint.sh
