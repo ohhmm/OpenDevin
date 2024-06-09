@@ -88,6 +88,9 @@ RUN python3 -m pip install pylatexenc
 # Install chromadb module in runtime stage
 RUN python3 -m pip install chromadb
 
+# Install llama_index and its dependencies in runtime stage
+RUN python3 -m pip install llama_index llama_index_vector_stores_chroma chromadb llama_index_embeddings_huggingface torch llama_index_embeddings_azure_openai llama_index_embeddings_ollama
+
 RUN python opendevin/core/download.py # No-op to download assets
 RUN chown -R opendevin:app /app/logs && chmod -R 770 /app/logs # This gets created by the download.py script
 
