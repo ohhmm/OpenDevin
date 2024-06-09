@@ -26,10 +26,13 @@ RUN apt-get update -y \
 
 COPY ./pyproject.toml ./poetry.lock ./
 RUN touch README.md
-RUN poetry install --without evaluation --no-root && rm -rf $POETRY_CACHE_DIR
+RUN poetry install --no-root && rm -rf $POETRY_CACHE_DIR
 
 # Install litellm module
 RUN python3 -m pip install litellm
+
+# Install python-docx module
+RUN python3 -m pip install python-docx
 
 FROM python:3.12.3-slim as runtime
 
@@ -69,6 +72,12 @@ RUN playwright install --with-deps chromium
 COPY --chown=opendevin:app --chmod=770 ./opendevin ./opendevin
 COPY --chown=opendevin:app --chmod=777 ./opendevin/runtime/plugins ./opendevin/runtime/plugins
 COPY --chown=opendevin:app --chmod=770 ./agenthub ./agenthub
+
+# Install python-docx module in runtime stage
+RUN python3 -m pip install python-docx
+
+# Install PyPDF2 module in runtime stage
+RUN python3 -m pip install PyPDF2
 
 RUN python opendevin/core/download.py # No-op to download assets
 RUN chown -R opendevin:app /app/logs && chmod -R 770 /app/logs # This gets created by the download.py script
