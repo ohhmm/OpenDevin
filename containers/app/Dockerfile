@@ -82,6 +82,9 @@ RUN python3 -m pip install PyPDF2
 # Install python-pptx module in runtime stage
 RUN python3 -m pip install python-pptx
 
+# Install pylatexenc module in runtime stage
+RUN python3 -m pip install pylatexenc
+
 RUN python opendevin/core/download.py # No-op to download assets
 RUN chown -R opendevin:app /app/logs && chmod -R 770 /app/logs # This gets created by the download.py script
 
