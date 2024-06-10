@@ -91,6 +91,9 @@ RUN python3 -m pip install chromadb
 # Install llama_index and its dependencies in runtime stage
 RUN python3 -m pip install llama_index llama_index_vector_stores_chroma chromadb llama_index_embeddings_huggingface torch llama_index_embeddings_azure_openai llama_index_embeddings_ollama
 
+# Install pydantic package in runtime stage
+RUN python3 -m pip install pydantic==2.7.3
+
 # Patch pydantic package to fix TypeError related to ForwardRef._evaluate() for Python 3.12.4 compatibility
 RUN sed -i 's/def evaluate_forwardref(type_: ForwardRef, globalns: Any, localns: Any) -> Any:/def evaluate_forwardref(type_: ForwardRef, globalns: Any, localns: Any) -> Any:\
     return cast(Any, type_)._evaluate(globalns, localns, set(), recursive_guard=set())/' /usr/local/lib/python3.12/site-packages/pydantic/v1/typing.py
