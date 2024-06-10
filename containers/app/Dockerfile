@@ -91,8 +91,8 @@ RUN python3 -m pip install chromadb
 # Install llama_index and its dependencies in runtime stage
 RUN python3 -m pip install llama_index llama_index_vector_stores_chroma chromadb llama_index_embeddings_huggingface torch llama_index_embeddings_azure_openai llama_index_embeddings_ollama
 
-# Patch pydantic package to fix TypeError related to ForwardRef._evaluate() for Python 3.12.4 compatibility
-RUN sed -i 's/def evaluate_forwardref(type_: ForwardRef, globalns: Any, localns: Any) -> Any:/def evaluate_forwardref(type_: ForwardRef, globalns: Any, localns: Any) -> Any:\n    return cast(Any, type_)._evaluate(globalns, localns, set(), recursive_guard=set())\n/' /app/.venv/lib/python3.12/site-packages/pydantic/v1/typing.py
+# Copy patched pydantic_typing.py file to fix TypeError related to ForwardRef._evaluate() for Python 3.12.4 compatibility
+COPY --chown=opendevin:app --chmod=770 ./pydantic_typing.py /app/.venv/lib/python3.12/site-packages/pydantic/v1/typing.py
 RUN python opendevin/core/download.py # No-op to download assets
 RUN chown -R opendevin:app /app/logs && chmod -R 770 /app/logs # This gets created by the download.py script
 
