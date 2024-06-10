@@ -96,7 +96,7 @@ RUN python3 -m pip install pydantic==2.7.3
 
 # Patch pydantic package to fix TypeError related to ForwardRef._evaluate() for Python 3.12.4 compatibility
 RUN sed -i 's/def evaluate_forwardref(type_: ForwardRef, globalns: Any, localns: Any) -> Any:/def evaluate_forwardref(type_: ForwardRef, globalns: Any, localns: Any) -> Any:\
-    return cast(Any, type_)._evaluate(globalns, localns, set(), recursive_guard=set())/' /usr/local/lib/python3.10/dist-packages/pydantic/v1/typing.py
+    return cast(Any, type_)._evaluate(globalns, localns, set(), recursive_guard=set())/' /usr/local/lib/python3.12/site-packages/pydantic/v1/typing.py
 
 RUN python opendevin/core/download.py # No-op to download assets
 RUN chown -R opendevin:app /app/logs && chmod -R 770 /app/logs # This gets created by the download.py script
