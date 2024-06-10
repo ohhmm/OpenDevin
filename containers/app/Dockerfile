@@ -93,6 +93,7 @@ RUN python3 -m pip install llama_index llama_index_vector_stores_chroma chromadb
 
 # Install pydantic package in runtime stage
 RUN python3 -m pip install pydantic==2.7.3
+RUN ls -l /usr/local/lib/python3.12/site-packages/pydantic
 
 # Patch pydantic package to fix TypeError related to ForwardRef._evaluate() for Python 3.12.4 compatibility
 RUN sed -i 's/def evaluate_forwardref(type_: ForwardRef, globalns: Any, localns: Any) -> Any:/def evaluate_forwardref(type_: ForwardRef, globalns: Any, localns: Any) -> Any:\
