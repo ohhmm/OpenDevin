@@ -447,10 +447,11 @@ def _edit_or_append_file(
             if lint_error is not None:
                 if first_error_line is not None:
                     CURRENT_LINE = int(first_error_line)
-                print(
-                    '[Your proposed edit has introduced new syntax error(s). Please understand the errors and retry your edit command.]'
-                )
-                print(lint_error)
+                # only change any literal strings here in combination with unit tests!
+            print(
+                '[Your proposed edit has introduced new syntax error(s). Please understand the errors and retry your edit command.]'
+            )
+            print(lint_error)
 
                 print('[This is how your edit would have looked if applied]')
                 print('-------------------------------------------------')

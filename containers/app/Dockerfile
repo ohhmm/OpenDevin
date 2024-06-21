@@ -21,12 +21,18 @@ ENV POETRY_NO_INTERACTION=1 \
     POETRY_CACHE_DIR=/tmp/poetry_cache
 
 RUN apt-get update -y \
-    && apt-get install -y curl make git build-essential \
+    && apt-get install -y curl make git build-essential g++ \
     && python3 -m pip install poetry==1.8.2  --break-system-packages
 
 COPY ./pyproject.toml ./poetry.lock ./
 RUN touch README.md
-RUN poetry install --without evaluation --no-root && rm -rf $POETRY_CACHE_DIR
+RUN poetry install --no-root && rm -rf $POETRY_CACHE_DIR
+
+# Install litellm module
+RUN python3 -m pip install litellm
+
+# Install python-docx module
+RUN python3 -m pip install python-docx
 
 FROM python:3.12.3-slim as runtime
 
@@ -42,7 +48,7 @@ ENV OPEN_DEVIN_BUILD_VERSION=$OPEN_DEVIN_BUILD_VERSION
 RUN mkdir -p $WORKSPACE_BASE
 
 RUN apt-get update -y \
-    && apt-get install -y curl ssh sudo
+    && apt-get install -y curl ssh sudo g++
 
 RUN sed -i 's/^UID_MIN.*/UID_MIN 499/' /etc/login.defs # Default is 1000, but OSX is often 501
 RUN sed -i 's/^UID_MAX.*/UID_MAX 1000000/' /etc/login.defs # Default is 60000, but we've seen up to 200000
@@ -67,13 +73,31 @@ COPY --chown=opendevin:app --chmod=770 ./opendevin ./opendevin
 COPY --chown=opendevin:app --chmod=777 ./opendevin/runtime/plugins ./opendevin/runtime/plugins
 COPY --chown=opendevin:app --chmod=770 ./agenthub ./agenthub
 
+# Install python-docx module in runtime stage
+RUN python3 -m pip install python-docx
+
+# Install PyPDF2 module in runtime stage
+RUN python3 -m pip install PyPDF2
+
+# Install python-pptx module in runtime stage
+RUN python3 -m pip install python-pptx
+
+# Install pylatexenc module in runtime stage
+RUN python3 -m pip install pylatexenc
+
+# Install chromadb module in runtime stage
+RUN python3 -m pip install chromadb
+
+# Install llama_index and its dependencies in runtime stage
+RUN python3 -m pip install llama_index llama_index_vector_stores_chroma chromadb llama_index_embeddings_huggingface torch llama_index_embeddings_azure_openai llama_index_embeddings_ollama
+
+# Copy patched pydantic_typing.py file to fix TypeError related to ForwardRef._evaluate() for Python 3.12.4 compatibility
+COPY --chown=opendevin:app --chmod=770 ./pydantic_typing.py /app/.venv/lib/python3.12/site-packages/pydantic/v1/typing.py
 RUN python opendevin/core/download.py # No-op to download assets
 RUN chown -R opendevin:app /app/logs && chmod -R 770 /app/logs # This gets created by the download.py script
 
-
 COPY --chown=opendevin:app --chmod=770 --from=frontend-builder /app/dist ./frontend/dist
 COPY --chown=opendevin:app --chmod=770 ./containers/app/entrypoint.sh /app/entrypoint.sh
-
 USER root
 
 WORKDIR /app

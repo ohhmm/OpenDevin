@@ -1,3 +1,5 @@
+import ast
+
 from opendevin.core.config import config
 from opendevin.events.action import (
     AgentRecallAction,
@@ -34,6 +36,36 @@ class ServerRuntime(Runtime):
     ):
         super().__init__(event_stream, sid, sandbox)
         self.file_store = LocalFileStore(config.workspace_base)
+
+    def _is_python_code(self, text):
+        """
+        Check if the given text is valid Python code.
+
+        Args:
+            text (str): The text to check.
+
+        Returns:
+            bool: True if the text is valid Python code, False otherwise.
+        """
+        try:
+            ast.parse(text)
+            return True
+        except SyntaxError:
+            return False
+
+    def _preprocess_text(self, text):
+        """
+        Preprocess the text to escape backticks if it's valid Python code.
+
+        Args:
+            text (str): The text to preprocess.
+
+        Returns:
+            str: The preprocessed or original text.
+        """
+        if self._is_python_code(text):
+            return text.replace('`', r'\`')
+        return text
 
     async def run(self, action: CmdRunAction) -> Observation:
         return self._run_command(action.command, background=action.background)
