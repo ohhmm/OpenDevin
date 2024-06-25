@@ -77,10 +77,14 @@ cd OpenDevin
 
 ### 6. Set Up the Development Environment
 
-Install the necessary dependencies and set up the development environment:
+Install the necessary dependencies and set up the development environment for both the frontend and documentation components:
 
 ```bash
+cd frontend
 npm install
+cd ../docs
+npm install
+cd ..
 ```
 
 ### 7. Modify the Cloned Version of OpenDevin
