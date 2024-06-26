@@ -71,6 +71,8 @@ You'll find OpenDevin running at [http://localhost:3000](http://localhost:3000) 
 
 OpenDevin will only have access to this workspace folder. The rest of your system will not be affected as it runs in a secured docker sandbox.
 
+For a detailed step-by-step guide on installing OpenDevin locally, including prerequisites, installation of tools and dependencies, and running OpenDevin in a Docker container, please refer to the [Local Installation Guide](./LOCAL_INSTALL_GUIDE.md).
+
 ## 🚀 Documentation
 
 To learn more about the project, and for tips on using OpenDevin,
