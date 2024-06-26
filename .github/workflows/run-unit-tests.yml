@@ -56,7 +56,12 @@ jobs:
           brew install --HEAD colima
           brew services start colima
           brew install docker
-          colima start  --network-address --arch x86_64
+
+          # Ensure SSH service is running
+          sudo systemsetup -f -setremotelogin on
+          sudo launchctl load -w /System/Library/LaunchDaemons/ssh.plist
+
+          colima start --verbose --network-address --arch x86_64
 
           # For testcontainers to find the Colima socket
           # https://github.com/abiosoft/colima/blob/main/docs/FAQ.md#cannot-connect-to-the-docker-daemon-at-unixvarrundockersock-is-the-docker-daemon-running
