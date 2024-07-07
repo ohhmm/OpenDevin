@@ -84,25 +84,25 @@ run_test() {
   # Capture the exit code of pytest
   pytest_exit_code=${PIPESTATUS[0]}
 
-  if grep -q "docker.errors.DockerException" $TMP_FILE; then
+  if rg -q "docker.errors.DockerException" $TMP_FILE; then
     echo "Error: docker.errors.DockerException found in the output. Exiting."
     echo "Please check if your Docker daemon is running!"
     exit 1
   fi
 
-  if grep -q "tenacity.RetryError" $TMP_FILE; then
+  if rg -q "tenacity.RetryError" $TMP_FILE; then
     echo "Error: tenacity.RetryError found in the output. Exiting."
     echo "This is mostly a transient error. Please retry."
     exit 1
   fi
 
-  if grep -q "ExceptionPxssh" $TMP_FILE; then
+  if rg -q "ExceptionPxssh" $TMP_FILE; then
     echo "Error: ExceptionPxssh found in the output. Exiting."
     echo "Could not connect to sandbox via ssh. Please stop any stale docker container and retry."
     exit 1
   fi
 
-  if grep -q "Address already in use" $TMP_FILE; then
+  if rg -q "Address already in use" $TMP_FILE; then
     echo "Error: Address already in use found in the output. Exiting."
     echo "Browsing tests need a local http server. Please check if there's any zombie process running start_http_server.py."
     exit 1
