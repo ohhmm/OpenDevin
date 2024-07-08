@@ -138,10 +138,18 @@ def run_test_case(test_cases_dir, workspace_dir, request):
             logging.error(f"Agent '{agent}' not found in agents_ref dictionary.")
             raise KeyError(f"Agent '{agent}' not found in agents_ref dictionary.")
 
+        logging.info(f'Running agent: {agent}')
+        logging.info(f'Task: {task}')
+        logging.info(f"Workspace directory: {os.path.join(agent_dir, 'workspace')}")
+        logging.info(
+            f"Command: python3 {SCRIPT_DIR}/../../opendevin/core/main.py -d {os.path.join(agent_dir, 'workspace')} -c {agents_ref[agent]} -t {task} -m gpt-3.5-turbo"
+        )
+        logging.info(f'Environment: {os.environ}')
+
         process = subprocess.Popen(
             [
                 'python3',
-                f'{SCRIPT_DIR}/../../opendevin/main.py',
+                f'{SCRIPT_DIR}/../../opendevin/core/main.py',
                 '-d',
                 f"{os.path.join(agent_dir, 'workspace')}",
                 '-c',

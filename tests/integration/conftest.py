@@ -205,8 +205,13 @@ def http_server():
 
 def set_up():
     global cur_id
+    global workspace_path
     cur_id = 0
-    assert workspace_path is not None
+    if workspace_path is None:
+        workspace_path = os.path.join(script_dir, 'workspace')
+        print(
+            f'WORKSPACE_BASE environment variable not set. Using default workspace path: {workspace_path}'
+        )
     if os.path.exists(workspace_path):
         for file in os.listdir(workspace_path):
             os.remove(os.path.join(workspace_path, file))
