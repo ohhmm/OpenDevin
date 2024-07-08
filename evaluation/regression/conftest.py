@@ -124,6 +124,15 @@ def run_test_case(test_cases_dir, workspace_dir, request):
             )
         else:
             os.makedirs(os.path.join(agent_dir, 'workspace'))
+
+        # Create the hello_world.sh script if it does not exist
+        hello_world_script_path = os.path.join(agent_dir, 'workspace', 'hello_world.sh')
+        if not os.path.isfile(hello_world_script_path):
+            with open(hello_world_script_path, 'w') as f:
+                f.write('#!/bin/bash\n')
+                f.write('echo "Hello, World!"\n')
+            os.chmod(hello_world_script_path, 0o755)
+
         agents_ref = {
             'monologue_agent': 'MonologueAgent',
             'codeact_agent': 'CodeActAgent',
