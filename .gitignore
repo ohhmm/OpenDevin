@@ -165,7 +165,7 @@ cython_debug/
 
 # evaluation
 evaluation/evaluation_outputs
-evaluation/outputs
+# evaluation/outputs
 evaluation/swe_bench/eval_workspace*
 evaluation/SWE-bench/data
 evaluation/webarena/scripts/webarena_env.sh
