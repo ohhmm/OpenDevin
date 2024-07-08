@@ -163,6 +163,17 @@ def mock_completion(*args, test_name, **kwargs):
         )
     else:
         mock_response = get_mock_response(test_name, message_str, cur_id)
+
+    # Additional logging for debugging
+    print(f'Test Name: {test_name}')
+    print(
+        f"Prompt File Path: {os.path.join(script_dir, 'mock', os.environ.get('AGENT', 'default_agent'), test_name, 'prompt_{:03d}.log'.format(cur_id))}"
+    )
+    print(
+        f"Response File Path: {os.path.join(script_dir, 'mock', os.environ.get('AGENT', 'default_agent'), test_name, 'response_{:03d}.log'.format(cur_id))}"
+    )
+    print(f'Messages: {message_str}')
+
     if mock_response is None:
         raise SecretExit('Mock response for prompt is not found')
     response = completion(**kwargs, mock_response=mock_response)

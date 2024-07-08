@@ -22,11 +22,6 @@ workspace_base = os.getenv('WORKSPACE_BASE')
 workspace_mount_path = os.getenv('WORKSPACE_MOUNT_PATH')
 workspace_mount_path_in_sandbox = os.getenv('WORKSPACE_MOUNT_PATH_IN_SANDBOX')
 
-print('\nPaths used:')
-print(f'workspace_base: {workspace_base}')
-print(f'workspace_mount_path: {workspace_mount_path}')
-print(f'workspace_mount_path_in_sandbox: {workspace_mount_path_in_sandbox}')
-
 
 @pytest.mark.skipif(
     os.getenv('AGENT') == 'BrowsingAgent',
@@ -44,6 +39,29 @@ print(f'workspace_mount_path_in_sandbox: {workspace_mount_path_in_sandbox}')
 def test_write_simple_script():
     task = "Write a shell script 'hello.sh' that prints 'hello'. Do not ask me for confirmation at any point."
     args = parse_arguments()
+
+    # Log the environment variables
+    print('\nPaths used:')
+    print(f'workspace_base: {workspace_base}')
+    print(f'workspace_mount_path: {workspace_mount_path}')
+    print(f'workspace_mount_path_in_sandbox: {workspace_mount_path_in_sandbox}')
+    print(f'AGENT: {os.getenv("AGENT")}')
+
+    # Log the content of the prompt file
+    prompt_file_path = os.path.join(
+        os.path.dirname(__file__),
+        'mock',
+        os.environ.get('AGENT', 'DummyAgent'),
+        'test_write_simple_script',
+        'prompt_001.log',
+    )
+    try:
+        with open(prompt_file_path, 'r') as prompt_file:
+            print(f'Content of prompt_001.log:\n{prompt_file.read()}')
+    except FileNotFoundError:
+        print(f'File not found: {prompt_file_path}')
+    except Exception as e:
+        print(f'Error reading file {prompt_file_path}: {e}')
 
     # Create the agent
     agent = Agent.get_cls(args.agent_cls)(llm=LLM(args.model_name))
@@ -98,7 +116,8 @@ def test_edits():
         shutil.copy(os.path.join(source_dir, file), dest_file)
 
     # Create the agent
-    agent = Agent.get_cls(args.agent_cls)(llm=LLM(args.model_name))
+    agent_cls = os.environ.get('AGENT', 'DummyAgent')
+    agent = Agent.get_cls(agent_cls)(llm=LLM(args.model_name))
 
     # Execute the task
     task = 'Fix typos in bad.txt. Do not ask me for confirmation at any point.'
