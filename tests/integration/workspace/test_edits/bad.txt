@@ -1,1 +1,0 @@
-This is a placeholder text for the bad.txt file in the test_edits directory.
