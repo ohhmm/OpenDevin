@@ -127,7 +127,17 @@ def run_test_case(test_cases_dir, workspace_dir, request):
         agents_ref = {
             'monologue_agent': 'MonologueAgent',
             'codeact_agent': 'CodeActAgent',
+            'codeact_swe_agent': 'CodeActSWEAgent',
+            'planner_agent': 'PlannerAgent',
+            'delegator_agent': 'DelegatorAgent',
+            'dummy_agent': 'DummyAgent',
+            'browsing_agent': 'BrowsingAgent',
         }
+
+        if agent not in agents_ref:
+            logging.error(f"Agent '{agent}' not found in agents_ref dictionary.")
+            raise KeyError(f"Agent '{agent}' not found in agents_ref dictionary.")
+
         process = subprocess.Popen(
             [
                 'python3',
