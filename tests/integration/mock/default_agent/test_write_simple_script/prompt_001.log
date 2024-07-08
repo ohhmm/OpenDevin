@@ -1,1 +1,4 @@
 This is a mock log file for the test_write_simple_script integration test.
+Agent: Creating a new file named 'hello.sh'
+Agent: Writing the command 'echo "hello"' to 'hello.sh'
+Agent: Making 'hello.sh' executable
