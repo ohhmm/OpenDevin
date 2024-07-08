@@ -88,6 +88,8 @@ def test_edits():
     args = parse_arguments()
     # Copy workspace artifacts to workspace_base location
     source_dir = os.path.join(os.path.dirname(__file__), 'workspace/test_edits/')
+    if not os.path.exists(source_dir):
+        os.makedirs(source_dir)
     files = os.listdir(source_dir)
     for file in files:
         dest_file = os.path.join(workspace_base, file)
