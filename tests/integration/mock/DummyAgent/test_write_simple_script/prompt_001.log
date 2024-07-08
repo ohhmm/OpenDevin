@@ -1,0 +1,3 @@
+Agent: Creating a new file named 'hello.sh'
+Agent: Writing the command 'echo "hello"' to 'hello.sh'
+Agent: Making 'hello.sh' executable

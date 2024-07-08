@@ -1,0 +1,3 @@
+Agent: Successfully created the file 'hello.sh'
+Agent: Successfully wrote the command 'echo "hello"' to 'hello.sh'
+Agent: Successfully made 'hello.sh' executable
