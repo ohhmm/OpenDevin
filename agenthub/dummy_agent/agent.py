@@ -133,6 +133,10 @@ class DummyAgent(Agent):
 
                 # check if the history matches the expected observations
                 hist_events = state.history.get_last_events(len(expected_observations))
+                if len(hist_events) < len(expected_observations):
+                    raise IndexError(
+                        'Not enough historical events to match expected observations'
+                    )
                 for i in range(len(expected_observations)):
                     hist_obs = event_to_dict(hist_events[i])
                     expected_obs = event_to_dict(expected_observations[i])
